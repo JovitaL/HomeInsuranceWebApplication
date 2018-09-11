@@ -1,0 +1,92 @@
+
+
+
+ #  HOMEINSURANCE DB  
+ 
+CREATE SCHEMA `HOMEINSURANCE` ;
+                 
+
+#-------------------------------------User-----------------
+Create table HOMEINSURANCE.User(
+user_id varchar(19) not null PRIMARY KEY,
+
+password varchar(19) not null,
+user_role ENUM('user','admin')not null);
+
+
+#-------------------------------------Location------
+
+
+Create table HOMEINSURANCE.Location(
+location_id MEDIUMINT NOT NULL auto_increment,
+
+residence_type 
+ENUM('SingleFamilyHome','Condo','Townhouse','Rowhouse','Duplex','Apartment')not null,
+
+address_line_1 varchar(49) not null, address_line_2 varchar(99),city varchar(14) not null,state varchar(14) not null,
+zip int(9) not null,
+residence_use ENUM('Primary','Secondary','RentalProperty')not null,
+user_id_location varchar(19) not null,
+PRIMARY KEY (location_id),FOREIGN KEY(user_id_location) REFERENCES HOMEINSURANCE.User(user_id) ON DELETE CASCADE);
+
+
+
+#------------------------------------Homeowner----
+
+Create table HOMEINSURANCE.Homeowner(homeowner_id MEDIUMINT NOT NULL auto_increment,first_name varchar(30) not null,last_name varchar(30)not null,
+birth_date DATE not null,retired ENUM('Yes','No')not null,SSN int(9) not null,email_id varchar(50) not null,user_id_homeowner varchar(19) not null,CONSTRAINT email_unique UNIQUE(email_id),
+
+CONSTRAINT SSN_UNIQUE UNIQUE(SSN),
+PRIMARY KEY (homeowner_id),FOREIGN KEY(user_id_homeowner) REFERENCES HOMEINSURANCE.User(user_id) ON DELETE CASCADE);
+
+#----------------------------------Property-----
+
+Create table HOMEINSURANCE.Property(property_id MEDIUMINT NOT NULL auto_increment,market_value DOUBLE UNSIGNED NOT NULL,
+
+built_year YEAR NOT NULL,home_square_foot DOUBLE UNSIGNED NOT NULL,
+home_style ENUM('1 story', '1.5 story','2 story', '2.5 story', '3 story')not null,
+
+home_roof_material ENUM('Concrete', 'Clay', 'Rubber', 'Steel', 'Tin', 'Wood')not null,
+garage_type ENUM('Attached','Detached','Basement','BuiltIn','None')not null,
+
+num_full_bath ENUM('1', '2', '3','more')not null,num_half_bath ENUM('1','2','3' ,'more')not null,
+swimming_pool ENUM('Yes','No')not null ,
+
+location_id_Property MEDIUMINT not null ,PRIMARY KEY (property_id),FOREIGN KEY(location_id_Property)REFERENCES HOMEINSURANCE.Location(location_id)ON DELETE CASCADE);
+
+
+
+#-----------------------------------Quote-------------
+
+
+Create table HOMEINSURANCE.Quote (quote_id MEDIUMINT NOT NULL auto_increment,monthly_premimum DOUBLE UNSIGNED NOT NULL,
+dwelling_coverage DOUBLE UNSIGNED NOT NULL,detatched_structure DOUBLE UNSIGNED NOT NULL,
+personal_property DOUBLE UNSIGNED NOT NULL,additional_living_exp DOUBLE UNSIGNED NOT NULL,
+medical_expenses DOUBLE UNSIGNED NOT NULL,deductible DOUBLE UNSIGNED NOT NULL,
+location_id_Quote MEDIUMINT not null,user_id_Quote varchar(19) not null,
+PRIMARY KEY (quote_id),FOREIGN KEY(location_id_Quote)REFERENCES HOMEINSURANCE.Location(
+location_id)ON DELETE CASCADE,
+FOREIGN KEY(user_id_Quote)REFERENCES HOMEINSURANCE.User(
+user_id)ON DELETE CASCADE);
+
+#-------------------------------------Policy---------------------
+Create table HOMEINSURANCE.Policy (policy_number MEDIUMINT NOT NULL auto_increment,policy_start_date DATE NOT NULL,
+policy_end_date DATE NOT NULL,policy_term double,policy_status VARCHAR(10),quote_id_Policy MEDIUMINT not null,
+PRIMARY KEY(policy_number),
+FOREIGN KEY(quote_id_Policy)REFERENCES HOMEINSURANCE.Quote(quote_id)ON DELETE CASCADE);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
